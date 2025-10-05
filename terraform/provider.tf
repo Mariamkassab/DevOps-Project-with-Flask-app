@@ -1,4 +1,4 @@
 provider "google" {
-  project = "iti-final-project-mariam"
+  project = "my-fun-playground"
   region  = "us-central1"
 }

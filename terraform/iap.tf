@@ -1,6 +1,6 @@
 resource "google_compute_firewall" "iap_access" {
     name        = "iap-access"
-    project     = "iti-final-project-mariam"
+    project     = "my-fun-playground"
     network     = google_compute_network.mariam_vpc.id
 
     direction = "INGRESS"

@@ -1,9 +1,10 @@
 resource "google_container_cluster" "gke_cluster" {
   name     = "mariam-gke"
   location = "us-central1-a"
+  deletion_protection = false 
 
   remove_default_node_pool = true
-  initial_node_count       = 3
+  initial_node_count       = 2
 
 
   network = google_compute_network.mariam_vpc.id
