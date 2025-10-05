@@ -1,14 +1,8 @@
 .git
 .github
-terraform/.terraform*.tfstate
-terraform/*.tfstate.*
-terraform/.terraform.lock.hcl
-terraform/terraform.tfstate.backup
-
-# Terraform
 **/.terraform/*
-*.tfstate
+
+**/terraform.tfstate
 *.tfstate.*
 *.tfplan
 *.backup
-.terraform.lock.hcl
