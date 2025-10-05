@@ -2,7 +2,9 @@
 .github
 **/.terraform/*
 
-**/terraform.tfstate
+*.tfstate
 *.tfstate.*
-*.tfplan
+
 *.backup
+.terraform.lock.hcl
+

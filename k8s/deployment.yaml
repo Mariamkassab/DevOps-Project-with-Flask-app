@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: flaskapp
-          image: mariamkasssab/flask-app
+          image: mariamkasssab/flask-app:latest
           ports:
             - containerPort: 5000
