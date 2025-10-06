@@ -55,7 +55,7 @@ jobs:
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          k8s/* $BASTION_NAME:/home/ubuntu/app/.k8s \
+          k8s/* $BASTION_NAME:/home/{{ secrets.BASTION_USER }}/app/.k8s \
           --project=$GCP_PROJECT_ID
 
         echo "🔹 Running deployment on Bastion via IAP tunnel..."
@@ -74,8 +74,8 @@ jobs:
             gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT_ID
 
             echo 'Deploying manifests...'
-            kubectl apply -f /home/ubuntu/app/.k8s/deployment.yaml
-            kubectl apply -f /home/ubuntu/app/.k8s/service.yaml
+            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/.k8s/deployment.yaml
+            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/.k8s/service.yaml
             kubectl rollout status deployment/flask-app
           "
 
