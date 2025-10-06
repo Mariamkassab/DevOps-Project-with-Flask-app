@@ -52,10 +52,7 @@ jobs:
         gcloud config set project $GCP_PROJECT_ID
         rm -r app
         mkdir app
-        ls -al
-
         echo "🔹 Copying manifests to Bastion over IAP..."
-        ls -al
         
         echo '${{ secrets.GCP_SA_KEY }}' > key.json
         gcloud compute scp \
@@ -72,9 +69,6 @@ jobs:
           --tunnel-through-iap \
           --project=$GCP_PROJECT_ID \
           --command="
-            ls -al
-            set -e
-            set -x
             echo 'Activating service account on bastion...'
             gcloud auth activate-service-account --key-file=key.json
             gcloud config set project $GCP_PROJECT_ID
