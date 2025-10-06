@@ -52,8 +52,10 @@ jobs:
         gcloud config set project $GCP_PROJECT_ID
         rm -r app
         mkdir app
+        ls -al
 
         echo "🔹 Copying manifests to Bastion over IAP..."
+        ls -al
         
         gcloud compute scp \
           --tunnel-through-iap \
