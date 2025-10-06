@@ -65,6 +65,9 @@ jobs:
           --project=$GCP_PROJECT_ID
         
         ls -al
+        set -e
+        set -x
+
 
         echo "🔹 Running deployment on Bastion via IAP tunnel..."
         gcloud compute ssh $BASTION_NAME \
