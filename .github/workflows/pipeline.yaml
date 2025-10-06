@@ -52,17 +52,17 @@ jobs:
         gcloud config set project $GCP_PROJECT_ID
         rm -r app
         mkdir app
-        chmod 777 app
 
         echo "🔹 Copying manifests to Bastion over IAP..."
-
+        
         gcloud compute scp \
-        --tunnel-through-iap \
-        --zone=$BASTION_ZONE \
-        k8s/deployment.yaml k8s/service.yaml \
-        $BASTION_NAME:/home/$BASTION_USER/app \
-        --project=$GCP_PROJECT_ID
-
+          --tunnel-through-iap \
+          --zone=$BASTION_ZONE \
+          k8s/deployment.yaml k8s/service.yaml \
+          $BASTION_NAME:. \
+          --project=$GCP_PROJECT_ID
+        
+        ls -al
 
         echo "🔹 Running deployment on Bastion via IAP tunnel..."
         gcloud compute ssh $BASTION_NAME \
