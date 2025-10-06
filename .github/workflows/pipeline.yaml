@@ -57,7 +57,8 @@ jobs:
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          k8s/* $BASTION_NAME:/home/{{ secrets.BASTION_USER }}/app \
+          k8s/deployment.yaml k8s/service.yaml \
+          $BASTION_NAME:/home/{{ secrets.BASTION_USER }}/app \
           --project=$GCP_PROJECT_ID
 
         echo "🔹 Running deployment on Bastion via IAP tunnel..."
