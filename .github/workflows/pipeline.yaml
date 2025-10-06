@@ -82,8 +82,8 @@ jobs:
             gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT_ID
 
             echo 'Deploying manifests...'
-            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/deployment.yaml
-            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/service.yaml
+            kubectl apply -f ./deployment.yaml
+            kubectl apply -f ./service.yaml
             kubectl rollout status deployment/flask-app
           "
 
