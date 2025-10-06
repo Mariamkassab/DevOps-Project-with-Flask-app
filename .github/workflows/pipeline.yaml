@@ -50,12 +50,13 @@ jobs:
         echo "🔹\ Authenticating with Service Account..."
         gcloud auth activate-service-account --key-file=<(echo '${{ secrets.GCP_SA_KEY }}')
         gcloud config set project $GCP_PROJECT_ID
+        mkdir /home/{{ secrets.BASTION_USER }}/app
 
         echo "🔹 Copying manifests to Bastion over IAP..."
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          k8s/* $BASTION_NAME:/home/{{ secrets.BASTION_USER }}/app/.k8s \
+          k8s/* $BASTION_NAME:/home/{{ secrets.BASTION_USER }}/app \
           --project=$GCP_PROJECT_ID
 
         echo "🔹 Running deployment on Bastion via IAP tunnel..."
@@ -74,8 +75,8 @@ jobs:
             gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT_ID
 
             echo 'Deploying manifests...'
-            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/.k8s/deployment.yaml
-            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/.k8s/service.yaml
+            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/deployment.yaml
+            kubectl apply -f /home/{{ secrets.BASTION_USER }}/app/service.yaml
             kubectl rollout status deployment/flask-app
           "
 
@@ -98,7 +99,7 @@ jobs:
 #          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
 
   #        echo "Applying manifests..."
- #         kubectl apply -f /path/to/.k8s/deployment.yaml
-#          kubectl apply -f /path/to/.k8s/service.yaml
+ #         kubectl apply -f /path/to/deployment.yaml
+#          kubectl apply -f /path/to/service.yaml
 #          kubectl rollout status deployment/flask-app
 
