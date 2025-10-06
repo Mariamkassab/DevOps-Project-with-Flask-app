@@ -73,5 +73,7 @@ jobs:
           --command="
             ls -al
             set -e
+            set -x
+            echo 'Activating service account on bastion...'
           "
 
