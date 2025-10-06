@@ -50,6 +50,7 @@ jobs:
         echo "🔹\ Authenticating with Service Account..."
         gcloud auth activate-service-account --key-file=<(echo '${{ secrets.GCP_SA_KEY }}')
         gcloud config set project $GCP_PROJECT_ID
+        rm -r app
         mkdir app
 
         echo "🔹 Copying manifests to Bastion over IAP..."
