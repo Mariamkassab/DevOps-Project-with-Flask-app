@@ -32,3 +32,29 @@ resource "google_project_iam_member" "storage_admin_binding" {
   role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.github_deployer.email}"
 }
+
+resource "google_project_iam_member" "iap_tunnel_access" {
+  project = "my-fun-playground"
+  role    = "roles/iap.tunnelResourceAccessor"
+  member  = "serviceAccount:${google_service_account.github_deployer.email}"
+}
+
+resource "google_project_iam_member" "compute_instance_admin" {
+  project = "my-fun-playground"
+  role    = "roles/compute.instanceAdmin.v1"
+  member  = "serviceAccount:${google_service_account.github_deployer.email}"
+}
+
+
+resource "google_project_iam_member" "os_login" {
+  project = "my-fun-playground"
+  role    = "roles/compute.osLogin"
+  member  = "serviceAccount:${google_service_account.github_deployer.email}"
+}
+
+
+resource "google_project_iam_member" "sa_user" {
+  project = "my-fun-playground"
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.github_deployer.email}"
+}

@@ -3,6 +3,7 @@ resource "google_compute_instance" "private_vm" {
   machine_type = "e2-micro"
   zone         = "us-central1-a"
 
+
   boot_disk {
     initialize_params {
       image = "debian-cloud/debian-11"
@@ -15,6 +16,14 @@ resource "google_compute_instance" "private_vm" {
   }
 
   metadata_startup_script = file("automation.tpl")
+  
+  metadata = {
+    enable-oslogin = "TRUE"
+  }
 
+  service_account {
+    email  = "${google_service_account.github_deployer.email}"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
 
 }

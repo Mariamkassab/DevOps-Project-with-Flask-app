@@ -39,15 +39,24 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Get GKE credentials
-      uses: google-github-actions/get-gke-credentials@v2
+    - name: Connect to Bastion and Deploy
+      uses: appleboy/ssh-action@v1.1.0
       with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        location: ${{ env.GKE_ZONE }}
-        project_id: ${{ env.PROJECT_ID }}
+        host: ${{ secrets.BASTION_HOST }}
+        username: ${{ secrets.BASTION_USER }}
+        key: ${{ secrets.BASTION_SSH_KEY }}
+        script: |
+          echo "Authenticating to GKE..."
+          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
+          gcloud container clusters get-credentials mariam-gke --zone us-central1-a --project my-fun-playground 
+          echo "Haha"
+#          gcloud compute ssh --zone "us-central1-a" "private-bastion" --tunnel-through-iap --project "my-fun-playground"
+          
+ #         apt-get install google-cloud-cli-gke-gcloud-auth-plugin
+#          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Deploy to GKE
-      run: |
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
-#        kubectl rollout status deployment/flask-app
+  #        echo "Applying manifests..."
+ #         kubectl apply -f /path/to/.k8s/deployment.yaml
+#          kubectl apply -f /path/to/.k8s/service.yaml
+#          kubectl rollout status deployment/flask-app
+
