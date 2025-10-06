@@ -87,26 +87,3 @@ jobs:
             kubectl rollout status deployment/flask-app
           "
 
-
-
-    - name: Connect to Bastion and Deploy
-      uses: appleboy/ssh-action@v1.1.0
-      with:
-        host: ${{ secrets.BASTION_HOST }}
-        username: ${{ secrets.BASTION_USER }}
-        key: ${{ secrets.BASTION_SSH_KEY }}
-        script: |
-          echo "Authenticating to GKE..."
-          sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
-          gcloud container clusters get-credentials mariam-gke --zone us-central1-a --project my-fun-playground 
-          echo "Haha"
-#          gcloud compute ssh --zone "us-central1-a" "private-bastion" --tunnel-through-iap --project "my-fun-playground"
-          
- #         apt-get install google-cloud-cli-gke-gcloud-auth-plugin
-#          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }} --project ${{ secrets.GCP_PROJECT_ID }}
-
-  #        echo "Applying manifests..."
- #         kubectl apply -f /path/to/deployment.yaml
-#          kubectl apply -f /path/to/service.yaml
-#          kubectl rollout status deployment/flask-app
-
