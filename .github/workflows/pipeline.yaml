@@ -57,10 +57,11 @@ jobs:
         echo "🔹 Copying manifests to Bastion over IAP..."
         ls -al
         
+        echo '${{ secrets.GCP_SA_KEY }}' > key.json
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          k8s/deployment.yaml k8s/service.yaml \
+          k8s/deployment.yaml k8s/service.yaml key.json\
           $BASTION_NAME:. \
           --project=$GCP_PROJECT_ID
 
@@ -76,5 +77,16 @@ jobs:
             set -x
             echo 'Activating service account on bastion...'
             echo '${{ secrets.GCP_SA_KEY }}' > /tmp/key.json
+            gcloud auth activate-service-account --key-file=/tmp/key.json
+            gcloud config set project $GCP_PROJECT_ID
+            export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+            echo 'Getting GKE credentials...'
+            gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT_ID
+
+            echo 'Deploying manifests...'
+            kubectl apply -f ./deployment.yaml
+            kubectl apply -f ./service.yaml
+            kubectl rollout status deployment/flask-app
           "
 
