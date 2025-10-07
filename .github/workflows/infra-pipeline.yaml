@@ -1,0 +1,52 @@
+name: GCP Infrastructure Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Terraform Action (apply or destroy)"
+        required: true
+#        default: "apply"     # to ensure not running the pipeline nor apply neither destroy
+        type: choice
+        options:
+          - apply
+          - destroy
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.7
+
+      - name: Authenticate to Google Cloud
+        run: |
+          echo '${{ secrets.TERRAFORM_SA_KEY }}' > key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=key.json
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud config set project $PROJECT_ID
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan
+
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.action == 'apply' }}
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.action == 'destroy' }}
+        working-directory: ./terraform
+        run: terraform destroy -auto-approve
