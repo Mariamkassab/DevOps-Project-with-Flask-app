@@ -23,7 +23,7 @@ Here’s a high-level view of how the system is organized:
 1. The **Flask app** is packaged into a Docker container  
 2. Infrastructure (e.g. cloud resources, networking) is defined in **Terraform**  
 3. Kubernetes manifests (in `k8s/`) deploy the app on a cluster  
-4. CI/CD pipelines automate build → test → deploy  
+4. CI/CD pipelines automate App, and infra deploying
 5. Monitoring stack captures metrics and logs (e.g. Prometheus, Grafana)
 
 You can extend or swap out any component (for example use Helm charts, or another tooling stack).
@@ -32,9 +32,12 @@ You can extend or swap out any component (for example use Helm charts, or anothe
 
 ## Repository Structure
 
-📂 Project Structure
+```
 .
-├── .github/workflows/app-pipeline.yaml
+├── .github/
+│   └── workflows/
+│       ├── app-pipeline.yaml
+│       └── infrax`-pipeline.yaml
 ├── app/
 │   ├── routes/
 │   ├── services/
@@ -64,6 +67,7 @@ You can extend or swap out any component (for example use Helm charts, or anothe
 ├── Dockerfile
 └── README.md
 
+```
 ---
 
 - **app/** — contains your Flask app modules, routes, templates, static files  
@@ -121,6 +125,13 @@ Workflow located at .github/workflows/app-pipeline.yaml automates:
     - Terraform provisioning (with Flag)
     - App deployment using connecting to the Bation host via iap for secure connection.
     - Helm install of Prometheus and Grafana
+
+Workflow located at .github/workflows/infra-pipeline.yaml automates:
+    - Initializing Terraform backend and providers  
+    - Planning and applying Terraform configuration to provision GKE infra & creating networking components (VPC, subnets, NAT, routers)  
+    - Destroying the infra whenever needed. 
+    - All enabled or disabled with a flag.
+
 _______________________________________________________________________________________________________________
 📊 Monitoring Stack
 
@@ -164,4 +175,8 @@ Note:
         ID: 1860  "Node Exporter Full"
 
 ![Grafana Dashboards](Screenshots/dashboards.png)
+---
+![Grafana Kubernetes cluster monitoring (via Prometheus)](Screenshots/dashboard-1.png)
+---
+![Grafana Node Exporter Full](Screenshots/dashboard-2.png)
 _______________________________________________________________________________________________________________
