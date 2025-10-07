@@ -94,21 +94,16 @@ jobs:
         echo "Authenticating with Service Account..."
         gcloud auth activate-service-account --key-file=<(echo '${{ secrets.GCP_SA_KEY }}')
         gcloud config set project $GCP_PROJECT_ID
-        rm -r app
-        mkdir app
         echo "Copying manifests to Bastion over IAP..."
-        ls -al
         echo '${{ secrets.GCP_SA_KEY }}' > key.json
         gcloud compute scp \
           --recurse \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          monitoring-stack/grafana/* \
-          $BASTION_NAME:./grafana \
+          monitoring-stack/* \
+          $BASTION_NAME:. \
           --project=$GCP_PROJECT_ID
         
-        ls -al
-
         echo "Running deployment on Bastion via IAP tunnel..."
         gcloud compute ssh $BASTION_NAME \
           --zone=$BASTION_ZONE \
