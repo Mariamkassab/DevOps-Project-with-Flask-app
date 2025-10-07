@@ -102,7 +102,7 @@ jobs:
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          k8s/deployment.yaml k8s/service.yaml k8s/namespace.yaml key.json\
+          monitoring-stack/* \
           $BASTION_NAME:. \
           --project=$GCP_PROJECT_ID
 
@@ -122,6 +122,6 @@ jobs:
             gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT_ID
 
             echo 'Deploying monitoring stack...'
-            helm install prometheus ./monitoring-stack/prometheus -n monitoring
-            helm install grafana ./monitoring-stack/grafana -n monitoring
+            helm install prometheus ./prometheus -n monitoring
+            helm install grafana ./grafana -n monitoring
           "
