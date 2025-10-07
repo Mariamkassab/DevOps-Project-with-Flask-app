@@ -39,7 +39,7 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Connect to Bastion via IAP Tunnel and Deploy application
+    - name: Connect to Bastion via IAP Tunnel and Deploy Application
       env:
         GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
@@ -83,7 +83,7 @@ jobs:
             kubectl apply -f ./namespace.yaml
           "
 
-    - name: Connect to Bastion via IAP Tunnel and Deploy monitoring stack
+    - name: Connect to Bastion via IAP Tunnel and Deploy Monitoring Stack
       env:
         GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
@@ -97,15 +97,16 @@ jobs:
         rm -r app
         mkdir app
         echo "Copying manifests to Bastion over IAP..."
-        
+        ls -al
         echo '${{ secrets.GCP_SA_KEY }}' > key.json
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          monitoring-stack/* \
+          monitoring-stack/grafana monitoring-stack/prometheus \
           $BASTION_NAME:. \
           --project=$GCP_PROJECT_ID
-
+        
+        ls -al
 
         echo "Running deployment on Bastion via IAP tunnel..."
         gcloud compute ssh $BASTION_NAME \
