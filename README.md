@@ -119,6 +119,8 @@ kubernetes      ClusterIP      34.118.224.1     <none>        443/TCP        23h
 _______________________________________________________________________________________________________________
 🔁 CI/CD with GitHub Actions
 
+Two seperete pipelines:-
+
 Workflow located at .github/workflows/app-pipeline.yaml automates:
     - Cloning the repo
     - Docker build & dockerhub push 
