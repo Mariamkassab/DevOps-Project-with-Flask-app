@@ -102,7 +102,7 @@ jobs:
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          monitoring-stack/grafana \
+          monitoring-stack/grafana/* \
           $BASTION_NAME:./grafana \
           --project=$GCP_PROJECT_ID
         
