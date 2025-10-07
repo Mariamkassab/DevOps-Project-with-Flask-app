@@ -39,7 +39,7 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Connect to Bastion via IAP Tunnel and Deploy
+    - name: Connect to Bastion via IAP Tunnel and Deploy application
       env:
         GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
@@ -58,7 +58,7 @@ jobs:
         gcloud compute scp \
           --tunnel-through-iap \
           --zone=$BASTION_ZONE \
-          k8s/deployment.yaml k8s/service.yaml key.json\
+          k8s/deployment.yaml k8s/service.yaml k8s/namespace.yaml key.json\
           $BASTION_NAME:. \
           --project=$GCP_PROJECT_ID
 
@@ -80,5 +80,48 @@ jobs:
             echo 'Deploying manifests...'
             kubectl apply -f ./deployment.yaml
             kubectl apply -f ./service.yaml
+            kubectl apply -f ./namespace.yaml
           "
 
+    - name: Connect to Bastion via IAP Tunnel and Deploy monitoring stack
+      env:
+        GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+        GKE_ZONE: ${{ secrets.GKE_ZONE }}
+        BASTION_NAME: ${{ secrets.BASTION_NAME }}
+        BASTION_ZONE: ${{ secrets.BASTION_ZONE }}
+      run: |
+        echo "Authenticating with Service Account..."
+        gcloud auth activate-service-account --key-file=<(echo '${{ secrets.GCP_SA_KEY }}')
+        gcloud config set project $GCP_PROJECT_ID
+        rm -r app
+        mkdir app
+        echo "Copying manifests to Bastion over IAP..."
+        
+        echo '${{ secrets.GCP_SA_KEY }}' > key.json
+        gcloud compute scp \
+          --tunnel-through-iap \
+          --zone=$BASTION_ZONE \
+          k8s/deployment.yaml k8s/service.yaml k8s/namespace.yaml key.json\
+          $BASTION_NAME:. \
+          --project=$GCP_PROJECT_ID
+
+
+        echo "Running deployment on Bastion via IAP tunnel..."
+        gcloud compute ssh $BASTION_NAME \
+          --zone=$BASTION_ZONE \
+          --tunnel-through-iap \
+          --project=$GCP_PROJECT_ID \
+          --command="
+            echo 'Activating service account on bastion...'
+            gcloud auth activate-service-account --key-file=key.json
+            gcloud config set project $GCP_PROJECT_ID
+            export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+            echo 'Getting GKE credentials...'
+            gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT_ID
+
+            echo 'Deploying monitoring stack...'
+            helm install prometheus ./monitoring-stack/prometheus -n monitoring
+            helm install grafana ./monitoring-stack/grafana -n monitoring
+          "
